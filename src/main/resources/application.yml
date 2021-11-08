@@ -1,1 +1,5 @@
-
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5435/parse_dont_validate
+    username: parse_dont_validate
+    password: parse_dont_validate

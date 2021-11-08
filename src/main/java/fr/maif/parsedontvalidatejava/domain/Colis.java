@@ -10,27 +10,71 @@ import static fr.maif.parsedontvalidatejava.libs.Validations.*;
 
 public sealed interface Colis {
 
+    sealed interface ColisExistant extends Colis {
+        ReferenceColis reference();
+    }
+
     DateDEnvoi dateDEnvoi();
     Email email();
     Adresse adresse();
 
-    record ColisEnvoye(DateDEnvoi dateDEnvoi, Email email, Adresse adresse) implements Colis {
+    record NouveauColis(DateDEnvoi dateDEnvoi, Email email, Adresse adresse) implements Colis {
         @Builder
-        public ColisEnvoye {
-            throwInvalid(nonNull(dateDEnvoi).and(nonNull(email)).and(nonNull(adresse)));
+        public NouveauColis {
+            throwInvalid(nonNull(dateDEnvoi)
+                    .and(nonNull(email))
+                    .and(nonNull(adresse))
+            );
+        }
+
+        public ColisPrisEnCharge toColisPrisEnCharge(ReferenceColis reference) {
+            return new ColisPrisEnCharge(reference, dateDEnvoi, email, adresse);
         }
     }
 
-    record ColisRecu(DateDEnvoi dateDEnvoi, DateDeReception dateDeReception, Email email, Adresse adresse) implements Colis {
+    record ColisPrisEnCharge(ReferenceColis reference, DateDEnvoi dateDEnvoi, Email email, Adresse adresse) implements ColisExistant {
         @Builder
-        public ColisRecu {
-            throwInvalid(
-                    nonNull(dateDEnvoi).and(nonNull(email)).and(nonNull(adresse))
-                            .andThen(() ->
-                                    doitEtreAvant(dateDEnvoi, dateDeReception, "La date d'envoi doit être avant la date de reception")
-                            )
+        public ColisPrisEnCharge {
+            throwInvalid(nonNull(reference)
+                    .and(nonNull(dateDEnvoi))
+                    .and(nonNull(email))
+                    .and(nonNull(adresse))
             );
         }
+    }
+    record ColisEnCoursDAcheminement(ReferenceColis reference, DateDEnvoi dateDEnvoi, PositionGps position, Email email, Adresse adresse) implements ColisExistant {
+        @Builder
+        public ColisEnCoursDAcheminement {
+            throwInvalid(nonNull(reference)
+                    .and(nonNull(dateDEnvoi))
+                    .and(nonNull(email))
+                    .and(nonNull(adresse))
+            );
+        }
+    }
+
+    record ColisRecu(ReferenceColis reference, DateDEnvoi dateDEnvoi, DateDeReception dateDeReception, Email email,
+                     Adresse adresse) implements ColisExistant {
+        @Builder
+        public ColisRecu {
+            throwInvalid(nonNull(reference)
+                    .and(nonNull(dateDEnvoi))
+                    .and(nonNull(email))
+                    .and(nonNull(adresse))
+                    .andThen(() ->
+                            doitEtreAvant(dateDEnvoi, dateDeReception, "La date d'envoi doit être avant la date de reception")
+                    )
+            );
+        }
+    }
+
+//    sealed interface ReferenceColis { }
+//    record PasDeReference() implements ReferenceColis { }
+    record ReferenceColis(String value) implements Refined<String> { }
+
+    record PositionGps(int latitude, int longitude) {
+        @Builder
+        public PositionGps {}
     }
 
     static String formatterLigneAdresse(String ligne) {
@@ -41,10 +85,11 @@ public sealed interface Colis {
     record CiviliteNomPrenom(String value) implements Refined<String> {
         public CiviliteNomPrenom {
             throwInvalid(nonNull(value).andThen(() ->
-                tailleMax(value, 38)
+                    tailleMax(value, 38)
             ));
         }
     }
+
     record NoAppEtageCouloirEscalier(String value) implements Refined<String> {
         public NoAppEtageCouloirEscalier {
             throwInvalid(nonNull(value).andThen(() ->
@@ -52,6 +97,7 @@ public sealed interface Colis {
             ));
         }
     }
+
     record EntreeBatimentImmeubleResidence(String value) implements Refined<String> {
         public EntreeBatimentImmeubleResidence {
             throwInvalid(nonNull(value).andThen(() ->
@@ -59,6 +105,7 @@ public sealed interface Colis {
             ));
         }
     }
+
     record NumeroLibelleVoie(String value) implements Refined<String> {
         public NumeroLibelleVoie(String value) {
             throwInvalid(nonNull(value).andThen(() ->
@@ -67,6 +114,7 @@ public sealed interface Colis {
             this.value = formatterLigneAdresse(value);
         }
     }
+
     record LieuDitServiceParticulierDeDistribution(String value) implements Refined<String> {
         public LieuDitServiceParticulierDeDistribution(String value) {
             throwInvalid(nonNull(value).andThen(() ->
@@ -75,6 +123,7 @@ public sealed interface Colis {
             this.value = formatterLigneAdresse(value);
         }
     }
+
     record CodePostalEtLocaliteOuCedex(String value) implements Refined<String> {
         public CodePostalEtLocaliteOuCedex(String value) {
             throwInvalid(nonNull(value).andThen(() ->
@@ -83,6 +132,7 @@ public sealed interface Colis {
             this.value = formatterLigneAdresse(value);
         }
     }
+
     record Pays(String value) implements Refined<String> {
         public Pays(String value) {
             throwInvalid(nonNull(value).andThen(() ->
@@ -91,6 +141,7 @@ public sealed interface Colis {
             this.value = formatterLigneAdresse(value);
         }
     }
+
     record RaisonSocialeOuDenomination(String value) implements Refined<String> {
         public RaisonSocialeOuDenomination {
             throwInvalid(nonNull(value).andThen(() ->
@@ -98,6 +149,7 @@ public sealed interface Colis {
             ));
         }
     }
+
     record IdentiteDestinataireOuService(String value) implements Refined<String> {
         public IdentiteDestinataireOuService {
             throwInvalid(nonNull(value).andThen(() ->
@@ -105,6 +157,7 @@ public sealed interface Colis {
             ));
         }
     }
+
     record MentionSpecialeEtCommuneGeo(String value) implements Refined<String> {
         public MentionSpecialeEtCommuneGeo(String value) {
             throwInvalid(nonNull(value).andThen(() ->
@@ -143,7 +196,7 @@ public sealed interface Colis {
                 Option<EntreeBatimentImmeubleResidence> ligne3,
                 NumeroLibelleVoie ligne4,
                 Option<LieuDitServiceParticulierDeDistribution> ligne5,
-                    CodePostalEtLocaliteOuCedex ligne6,
+                CodePostalEtLocaliteOuCedex ligne6,
                 Option<Pays> ligne7
         ) implements Adresse {
             @Builder

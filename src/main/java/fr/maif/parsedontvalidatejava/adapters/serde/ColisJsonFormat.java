@@ -9,9 +9,14 @@ import fr.maif.parsedontvalidatejava.domain.Colis.Adresse.AdresseBtoB;
 import fr.maif.parsedontvalidatejava.domain.Colis.Adresse.AdresseBtoB.AdresseBtoBBuilder;
 import fr.maif.parsedontvalidatejava.domain.Colis.Adresse.AdresseBtoC;
 import fr.maif.parsedontvalidatejava.domain.Colis.Adresse.AdresseBtoC.AdresseBtoCBuilder;
-import fr.maif.parsedontvalidatejava.domain.Colis.ColisEnvoye.ColisEnvoyeBuilder;
+import fr.maif.parsedontvalidatejava.domain.Colis.ColisEnCoursDAcheminement.ColisEnCoursDAcheminementBuilder;
+import fr.maif.parsedontvalidatejava.domain.Colis.ColisPrisEnCharge.ColisPrisEnChargeBuilder;
 import fr.maif.parsedontvalidatejava.domain.Colis.ColisRecu.ColisRecuBuilder;
+import fr.maif.parsedontvalidatejava.domain.Colis.NouveauColis.NouveauColisBuilder;
+import fr.maif.parsedontvalidatejava.domain.Colis.PositionGps.PositionGpsBuilder;
 import fr.maif.parsedontvalidatejava.libs.Refined;
+
+import java.time.LocalDateTime;
 
 import static fr.maif.json.Json.$$;
 import static fr.maif.json.JsonRead.*;
@@ -24,36 +29,109 @@ public interface ColisJsonFormat {
     static JsonFormat<Colis> colisFormat() {
         return JsonFormat.of(
                 JsonRead.oneOf(_string("type"),
-                        caseOf($(ColisEnvoye.class.getSimpleName()), colisEnvoyeFormat()),
+                        caseOf($(NouveauColis.class.getSimpleName()), nouveauColisFormat()),
+                        caseOf($(ColisPrisEnCharge.class.getSimpleName()), colisPrisEnChargeFormat()),
+                        caseOf($(ColisEnCoursDAcheminement.class.getSimpleName()), colisEnCoursDAcheminementFormat()),
                         caseOf($(ColisRecu.class.getSimpleName()), colisRecuFormat())
                 ),
                 (Colis colis) -> switch (colis) {
-                    case ColisEnvoye colisEnvoye -> colisEnvoyeFormat().write(colisEnvoye);
+                    case NouveauColis nouveauColis -> nouveauColisFormat().write(nouveauColis);
+                    case ColisPrisEnCharge colisPrisEnCharge -> colisPrisEnChargeFormat().write(colisPrisEnCharge);
+                    case ColisEnCoursDAcheminement colisEnvoye -> colisEnCoursDAcheminementFormat().write(colisEnvoye);
                     case ColisRecu colisRecu -> colisRecuFormat().write(colisRecu);
                 }
         );
     }
-    static JsonFormat<ColisEnvoye> colisEnvoyeFormat() {
+
+    static JsonFormat<Colis.ColisExistant> colisExistantFormat() {
         return JsonFormat.of(
-                __("dateDEnvoi", dateDEnvoiFormat(), ColisEnvoye.builder()::dateDEnvoi)
-                .and(__("email", emailFormat()), ColisEnvoyeBuilder::email)
-                .and(__("adresse", adresseFormat()), ColisEnvoyeBuilder::adresse)
-                .map(ColisEnvoyeBuilder::build),
-                (ColisEnvoye colis) -> Json.obj(
+                JsonRead.oneOf(_string("type"),
+                        caseOf($(ColisPrisEnCharge.class.getSimpleName()), colisPrisEnChargeFormat()),
+                        caseOf($(ColisEnCoursDAcheminement.class.getSimpleName()), colisEnCoursDAcheminementFormat()),
+                        caseOf($(ColisRecu.class.getSimpleName()), colisRecuFormat())
+                ),
+                (Colis.ColisExistant colis) -> switch (colis) {
+                    case ColisPrisEnCharge colisPrisEnCharge -> colisPrisEnChargeFormat().write(colisPrisEnCharge);
+                    case ColisEnCoursDAcheminement colisEnvoye -> colisEnCoursDAcheminementFormat().write(colisEnvoye);
+                    case ColisRecu colisRecu -> colisRecuFormat().write(colisRecu);
+                }
+        );
+    }
+
+    static JsonFormat<NouveauColis> nouveauColisFormat() {
+        return JsonFormat.of(
+                __("email", emailFormat(), NouveauColis.builder()::email)
+                .and(_opt("dateDEnvoi", dateDEnvoiFormat()).map(d -> d.getOrElse(new DateDEnvoi(LocalDateTime.now()))), NouveauColisBuilder::dateDEnvoi)
+                .and(__("adresse", adresseFormat()), NouveauColisBuilder::adresse)
+                .map(NouveauColisBuilder::build),
+                (NouveauColis colis) -> Json.obj(
+                        $$("type", colis.getClass().getSimpleName()),
                         $$("dateDEnvoi", colis.dateDEnvoi(), dateDEnvoiFormat()),
                         $$("email", colis.email(), emailFormat()),
                         $$("adresse", colis.adresse(), adresseFormat())
                 )
         );
     }
+
+    static JsonFormat<ColisPrisEnCharge> colisPrisEnChargeFormat() {
+        return JsonFormat.of(
+                __("dateDEnvoi", dateDEnvoiFormat(), ColisPrisEnCharge.builder()::dateDEnvoi)
+                .and(__("reference", referenceFormat()), ColisPrisEnChargeBuilder::reference)
+                .and(__("email", emailFormat()), ColisPrisEnChargeBuilder::email)
+                .and(__("adresse", adresseFormat()), ColisPrisEnChargeBuilder::adresse)
+                .map(ColisPrisEnChargeBuilder::build),
+                (ColisPrisEnCharge colis) -> Json.obj(
+                        $$("reference", colis.reference(), referenceFormat()),
+                        $$("type", colis.getClass().getSimpleName()),
+                        $$("dateDEnvoi", colis.dateDEnvoi(), dateDEnvoiFormat()),
+                        $$("email", colis.email(), emailFormat()),
+                        $$("adresse", colis.adresse(), adresseFormat())
+                )
+        );
+    }
+
+    static JsonFormat<ColisEnCoursDAcheminement> colisEnCoursDAcheminementFormat() {
+        return JsonFormat.of(
+                __("dateDEnvoi", dateDEnvoiFormat(), ColisEnCoursDAcheminement.builder()::dateDEnvoi)
+                .and(__("reference", referenceFormat()), ColisEnCoursDAcheminementBuilder::reference)
+                .and(__("email", emailFormat()), ColisEnCoursDAcheminementBuilder::email)
+                .and(__("adresse", adresseFormat()), ColisEnCoursDAcheminementBuilder::adresse)
+                .and(__("position", positionFormat()), ColisEnCoursDAcheminementBuilder::position)
+                .map(ColisEnCoursDAcheminementBuilder::build),
+                (ColisEnCoursDAcheminement colis) -> Json.obj(
+                        $$("reference", colis.reference(), referenceFormat()),
+                        $$("type", colis.getClass().getSimpleName()),
+                        $$("dateDEnvoi", colis.dateDEnvoi(), dateDEnvoiFormat()),
+                        $$("email", colis.email(), emailFormat()),
+                        $$("position", colis.position(), positionFormat()),
+                        $$("adresse", colis.adresse(), adresseFormat())
+                )
+        );
+    }
+
+    static JsonFormat<PositionGps> positionFormat() {
+        return JsonFormat.of(
+                __("latitude", _int(), PositionGps.builder()::latitude)
+                .and(__("longitude", _int()), PositionGpsBuilder::longitude)
+                .map(PositionGpsBuilder::build),
+                (PositionGps gps) -> Json.obj(
+                    $$("latitude", gps.latitude()),
+                    $$("longitude", gps.longitude())
+                )
+        );
+    }
+
     static JsonFormat<ColisRecu> colisRecuFormat() {
         return JsonFormat.of(
                 __("dateDEnvoi", dateDEnvoiFormat(), ColisRecu.builder()::dateDEnvoi)
+                .and(__("reference", referenceFormat()), ColisRecuBuilder::reference)
                 .and(__("dateDeReception", dateDeReceptionFormat()), ColisRecuBuilder::dateDeReception)
                 .and(__("email", emailFormat()), ColisRecuBuilder::email)
                 .and(__("adresse", adresseFormat()), ColisRecuBuilder::adresse)
                 .map(ColisRecuBuilder::build),
                 (ColisRecu colis) -> Json.obj(
+                        $$("reference", colis.reference(), referenceFormat()),
+                        $$("type", colis.getClass().getSimpleName()),
                         $$("dateDEnvoi", colis.dateDEnvoi(), dateDEnvoiFormat()),
                         $$("dateDeReception", colis.dateDeReception(), dateDeReceptionFormat()),
                         $$("email", colis.email(), emailFormat()),
@@ -113,7 +191,7 @@ public interface ColisJsonFormat {
                 .and(_opt("ligne7", paysFormat()), AdresseBtoCBuilder::ligne7)
                 .map(AdresseBtoCBuilder::build),
         adresse -> Json.obj(
-                $$("type", AdresseBtoB.class.getSimpleName()),
+                $$("type", AdresseBtoC.class.getSimpleName()),
                 $$("ligne1", adresse.ligne1(), civiliteNomPrenomFormat()),
                 $$("ligne2", adresse.ligne2(), noAppEtageCouloirEscalierFormat()),
                 $$("ligne3", adresse.ligne3(), entreeBatimentImmeubleResidenceFormat()),
@@ -121,8 +199,11 @@ public interface ColisJsonFormat {
                 $$("ligne5", adresse.ligne5(), lieuDitServiceParticulierDeDistributionFormat()),
                 $$("ligne6", adresse.ligne6(), codePostalEtLocaliteOuCedexFormat()),
                 $$("ligne7", adresse.ligne7(), paysFormat())
-        )
-        );
+        ));
+    }
+
+    private static JsonFormat<ReferenceColis> referenceFormat() {
+        return refinedString(ReferenceColis::new);
     }
 
     private static JsonFormat<LieuDitServiceParticulierDeDistribution> lieuDitServiceParticulierDeDistributionFormat() {

@@ -7,6 +7,11 @@ plugins {
 group = 'fr.maif'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
+targetCompatibility = '17'
+
+compileJava {
+	options.compilerArgs.add("--enable-preview")
+}
 
 repositories {
 	mavenCentral()
@@ -14,10 +19,14 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	implementation 'io.r2dbc:r2dbc-postgresql:0.8.10.RELEASE'
 	implementation 'io.vavr:vavr:0.10.4'
 	implementation 'fr.maif:functional-validation:1.0.1'
 	implementation 'fr.maif:functional-json:1.0.3'
+	implementation group: 'org.jooq', name: 'jooq', version: '3.15.4'
 	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 }
