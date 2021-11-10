@@ -1,4 +1,4 @@
-package fr.maif.parsedontvalidatejava.domain;
+package fr.maif.parsedontvalidatejava.v2.domain;
 
 import fr.maif.parsedontvalidatejava.libs.Refined;
 import io.vavr.control.Option;
@@ -177,7 +177,7 @@ public sealed interface Colis {
                 CodePostalEtLocaliteOuCedex ligne6,
                 Option<Pays> ligne7
         ) implements Adresse {
-            @Builder
+            @Builder(toBuilder = true)
             public AdresseBtoB {
                 throwInvalid(nonNull(ligne1)
                         .and(nonNull(ligne2))
@@ -199,7 +199,7 @@ public sealed interface Colis {
                 CodePostalEtLocaliteOuCedex ligne6,
                 Option<Pays> ligne7
         ) implements Adresse {
-            @Builder
+            @Builder(toBuilder = true)
             public AdresseBtoC {
                 throwInvalid(nonNull(ligne1)
                         .and(nonNull(ligne2))

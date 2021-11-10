@@ -1,12 +1,12 @@
-package fr.maif.parsedontvalidatejava.adapters.primary;
+package fr.maif.parsedontvalidatejava.v2.adapters.primary;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.maif.json.Json;
 import fr.maif.json.JsonWrite;
-import fr.maif.parsedontvalidatejava.adapters.serde.ColisJsonFormat;
-import fr.maif.parsedontvalidatejava.domain.LivraisonDeColis;
-import fr.maif.parsedontvalidatejava.domain.errors.ColisNonTrouve;
-import fr.maif.parsedontvalidatejava.domain.errors.EtatInvalide;
+import fr.maif.parsedontvalidatejava.v2.adapters.serde.ColisJsonFormat;
+import fr.maif.parsedontvalidatejava.v2.domain.LivraisonDeColis;
+import fr.maif.parsedontvalidatejava.v2.domain.errors.ColisNonTrouve;
+import fr.maif.parsedontvalidatejava.v2.domain.errors.EtatInvalide;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;

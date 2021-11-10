@@ -1,19 +1,19 @@
-package fr.maif.parsedontvalidatejava.adapters.serde;
+package fr.maif.parsedontvalidatejava.v2.adapters.serde;
 
 import fr.maif.json.Json;
 import fr.maif.json.JsonFormat;
 import fr.maif.json.JsonRead;
-import fr.maif.parsedontvalidatejava.domain.Colis;
-import fr.maif.parsedontvalidatejava.domain.Colis.*;
-import fr.maif.parsedontvalidatejava.domain.Colis.Adresse.AdresseBtoB;
-import fr.maif.parsedontvalidatejava.domain.Colis.Adresse.AdresseBtoB.AdresseBtoBBuilder;
-import fr.maif.parsedontvalidatejava.domain.Colis.Adresse.AdresseBtoC;
-import fr.maif.parsedontvalidatejava.domain.Colis.Adresse.AdresseBtoC.AdresseBtoCBuilder;
-import fr.maif.parsedontvalidatejava.domain.Colis.ColisEnCoursDAcheminement.ColisEnCoursDAcheminementBuilder;
-import fr.maif.parsedontvalidatejava.domain.Colis.ColisPrisEnCharge.ColisPrisEnChargeBuilder;
-import fr.maif.parsedontvalidatejava.domain.Colis.ColisRecu.ColisRecuBuilder;
-import fr.maif.parsedontvalidatejava.domain.Colis.NouveauColis.NouveauColisBuilder;
-import fr.maif.parsedontvalidatejava.domain.Colis.PositionGps.PositionGpsBuilder;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.*;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.Adresse.AdresseBtoB;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.Adresse.AdresseBtoB.AdresseBtoBBuilder;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.Adresse.AdresseBtoC;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.Adresse.AdresseBtoC.AdresseBtoCBuilder;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.ColisEnCoursDAcheminement.ColisEnCoursDAcheminementBuilder;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.ColisPrisEnCharge.ColisPrisEnChargeBuilder;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.ColisRecu.ColisRecuBuilder;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.NouveauColis.NouveauColisBuilder;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.PositionGps.PositionGpsBuilder;
 import fr.maif.parsedontvalidatejava.libs.Refined;
 
 import java.time.LocalDateTime;

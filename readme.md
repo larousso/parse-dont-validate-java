@@ -13,12 +13,27 @@ docker-compose up
 ## L'API 
 
 ```bash 
-curl -XGET http://localhost:8080/api/colis | jq 
+curl -XGET http://localhost:8080/api/v1/colis | jq 
+curl -XGET http://localhost:8080/api/v2/colis | jq 
 ```
 
 
 ```bash 
-curl -XPOST http://localhost:8080/api/colis -H 'Content-Type:application/json' -d '{
+curl -XPOST http://localhost:8080/api/v1/colis -H 'Content-Type:application/json' -d '{
+    "type": "NouveauColis", 
+    "email": "jdusse@maif.fr",
+    "adresse": {
+        "type": "AdresseBtoC", 
+        "ligne1": "Jean Claude Dusse", 
+        "ligne4": "10 rue de la rue",
+        "ligne6": "79000 Niort"
+    }
+}' 
+```
+Ou
+
+```bash 
+curl -XPOST http://localhost:8080/api/v2/colis -H 'Content-Type:application/json' -d '{
     "type": "NouveauColis", 
     "email": "jdusse@maif.fr",
     "adresse": {
@@ -33,7 +48,7 @@ curl -XPOST http://localhost:8080/api/colis -H 'Content-Type:application/json' -
 
 
 ```bash 
-curl -XPUT http://localhost:8080/api/colis/4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa -H 'Content-Type:application/json' -d '{
+curl -XPUT http://localhost:8080/api/v2/colis/4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa -H 'Content-Type:application/json' -d '{
     "reference": "4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa",
     "type": "ColisEnCoursDAcheminement", 
     "email": "jdusse@maif.fr",
@@ -53,7 +68,7 @@ curl -XPUT http://localhost:8080/api/colis/4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa 
 
 
 ```bash 
-curl -XPUT http://localhost:8080/api/colis/4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa -H 'Content-Type:application/json' -d '{
+curl -XPUT http://localhost:8080/api/colis/v2/4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa -H 'Content-Type:application/json' -d '{
   "reference": "4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa",
   "type": "ColisRecu",
   "dateDEnvoi": "2021-11-08T11:59:09.933828",

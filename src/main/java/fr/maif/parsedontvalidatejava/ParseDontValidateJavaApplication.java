@@ -1,6 +1,6 @@
 package fr.maif.parsedontvalidatejava;
 
-import fr.maif.parsedontvalidatejava.adapters.primary.ColisApi;
+import fr.maif.parsedontvalidatejava.v2.adapters.primary.ColisApi;
 import io.r2dbc.spi.ConnectionFactory;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -16,7 +16,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
-import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 @SpringBootApplication
 public class ParseDontValidateJavaApplication {
@@ -28,13 +27,6 @@ public class ParseDontValidateJavaApplication {
 	@Bean
 	public DSLContext jooqDslContext(ConnectionFactory connectionFactory) {
 		return DSL.using(connectionFactory).dsl();
-	}
-
-	@Bean
-	public RouterFunction<ServerResponse> getStudentsRoute(ColisApi colisApi) {
-		return route(GET("/api/colis"), colisApi::listerColis)
-				.andRoute(POST("/api/colis"), colisApi::prendreEnChargeLeColis)
-				.andRoute(PUT("/api/colis/{id}"), colisApi::gererLeColis);
 	}
 
 	@Bean

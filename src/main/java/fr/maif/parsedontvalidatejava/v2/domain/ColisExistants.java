@@ -1,4 +1,4 @@
-package fr.maif.parsedontvalidatejava.domain;
+package fr.maif.parsedontvalidatejava.v2.domain;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

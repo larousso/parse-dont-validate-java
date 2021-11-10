@@ -1,7 +1,8 @@
-package fr.maif.parsedontvalidatejava.adapters.secondary;
+package fr.maif.parsedontvalidatejava.v2.adapters.secondary;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.maif.parsedontvalidatejava.domain.Colis;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis;
 import fr.maif.parsedontvalidatejava.libs.db.ColReader;
 import io.vavr.control.Option;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import static fr.maif.parsedontvalidatejava.libs.db.ColReader.col;
 import static fr.maif.parsedontvalidatejava.libs.db.NamedColReader.*;
 import static fr.maif.parsedontvalidatejava.libs.db.NamedColReader.stringCol;
 
+@JsonInclude(JsonInclude.Include.ALWAYS)
 record ColisDatabase(
         String reference,
         ColisType type,

@@ -1,10 +1,10 @@
-package fr.maif.parsedontvalidatejava.domain;
+package fr.maif.parsedontvalidatejava.v2.domain;
 
-import fr.maif.parsedontvalidatejava.domain.Colis.ColisEnCoursDAcheminement;
-import fr.maif.parsedontvalidatejava.domain.Colis.ColisPrisEnCharge;
-import fr.maif.parsedontvalidatejava.domain.Colis.ColisRecu;
-import fr.maif.parsedontvalidatejava.domain.errors.ColisNonTrouve;
-import fr.maif.parsedontvalidatejava.domain.errors.EtatInvalide;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.ColisEnCoursDAcheminement;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.ColisPrisEnCharge;
+import fr.maif.parsedontvalidatejava.v2.domain.Colis.ColisRecu;
+import fr.maif.parsedontvalidatejava.v2.domain.errors.ColisNonTrouve;
+import fr.maif.parsedontvalidatejava.v2.domain.errors.EtatInvalide;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -45,31 +45,19 @@ public class LivraisonDeColis {
     }
 
     Mono<? extends Colis> gererColisExistant(Colis.ColisExistant colisExistant, Colis.ColisExistant colisAGerer) {
-        record ColisExistantEtColisAGerer(Colis.ColisExistant colisExistant, Colis.ColisExistant colisAGerer) {}
-        var paire = new ColisExistantEtColisAGerer(colisExistant, colisAGerer);
-        return switch (paire) {
-            case ColisExistantEtColisAGerer c &&
-                    c.colisAGerer instanceof ColisEnCoursDAcheminement colisEnCoursAGerer &&
-                    c.colisExistant instanceof ColisPrisEnCharge ->
-                        mettreAJourColis(colisEnCoursAGerer);
-            case ColisExistantEtColisAGerer c &&
-                    c.colisAGerer instanceof ColisEnCoursDAcheminement colisEnCoursAGerer &&
-                    c.colisExistant instanceof ColisEnCoursDAcheminement ->
-                        mettreAJourColis(colisEnCoursAGerer);
-            case ColisExistantEtColisAGerer c &&
-                    c.colisAGerer instanceof ColisRecu colisEnCoursAGerer &&
-                    c.colisExistant instanceof ColisEnCoursDAcheminement  ->
-                        enregistrerColisRecu(colisEnCoursAGerer);
-            case ColisExistantEtColisAGerer c &&
-                    c.colisExistant instanceof ColisPrisEnCharge ->
+        return switch (colisExistant) {
+            case ColisPrisEnCharge __ && colisAGerer instanceof ColisEnCoursDAcheminement colisEnCoursAGerer ->
+                    mettreAJourColis(colisEnCoursAGerer);
+            case ColisEnCoursDAcheminement __ && colisAGerer instanceof ColisEnCoursDAcheminement colisEnCoursAGerer ->
+                    mettreAJourColis(colisEnCoursAGerer);
+            case ColisEnCoursDAcheminement __  && colisAGerer instanceof ColisRecu colisEnCoursAGerer ->
+                    enregistrerColisRecu(colisEnCoursAGerer);
+            case ColisPrisEnCharge __ ->
                     Mono.error(new EtatInvalide("On attend un colis à l'état \"ColisEnCoursDAcheminement\""));
-            case ColisExistantEtColisAGerer c &&
-                    c.colisExistant instanceof ColisEnCoursDAcheminement ->
+            case ColisEnCoursDAcheminement __ ->
                     Mono.error(new EtatInvalide("On attend un colis à l'état \"ColisEnCoursDAcheminement\" ou \"ColisPrisEnCharge\""));
-            case ColisExistantEtColisAGerer c &&
-                    c.colisExistant instanceof ColisRecu ->
+            case ColisRecu __ ->
                     Mono.error(new EtatInvalide("Le colis est déja reçu"));
-            default -> Mono.error(new EtatInvalide());
         };
     }
 
