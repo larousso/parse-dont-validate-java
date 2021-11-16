@@ -22,8 +22,8 @@ record ColisDatabase(
         ColisType type,
         @JsonProperty("date_envoi") LocalDateTime dateDEnvoi,
         @JsonProperty("date_reception") LocalDateTime dateReception,
-        Integer latitude,
-        Integer longitude,
+        Double latitude,
+        Double longitude,
         String email,
         @JsonProperty("adresse_type") AdresseType adresseType,
         String ligne1,
@@ -48,8 +48,8 @@ record ColisDatabase(
                 .and(col(stringCol("type"), ColisDatabase.ColisType::valueOf), ColisDatabaseBuilder::type)
                 .and(localDateTimeCol("date_envoi"), ColisDatabaseBuilder::dateDEnvoi)
                 .and(localDateTimeCol("date_reception"), ColisDatabaseBuilder::dateReception)
-                .and(intCol("latitude"), ColisDatabaseBuilder::latitude)
-                .and(intCol("longitude"), ColisDatabaseBuilder::longitude)
+                .and(doubleCol("latitude"), ColisDatabaseBuilder::latitude)
+                .and(doubleCol("longitude"), ColisDatabaseBuilder::longitude)
                 .and(stringCol("email"), ColisDatabaseBuilder::email)
                 .and(col(stringCol("adresse_type"), ColisDatabase.AdresseType::valueOf), ColisDatabaseBuilder::adresseType)
                 .and(stringCol("ligne1"), ColisDatabaseBuilder::ligne1)

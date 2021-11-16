@@ -16,11 +16,11 @@ import static fr.maif.json.Json.$$;
 
 @RestController
 @RequestMapping("/api/v1/colis")
-public class ColisApiClassic {
+public class ColisApiV1 {
 
     private final LivraisonDeColis livraisonDeColis;
 
-    public ColisApiClassic(LivraisonDeColis livraisonDeColis) {
+    public ColisApiV1(LivraisonDeColis livraisonDeColis) {
         this.livraisonDeColis = livraisonDeColis;
     }
 

@@ -47,11 +47,11 @@ public class LivraisonDeColis {
     Mono<? extends Colis> gererColisExistant(Colis.ColisExistant colisExistant, Colis.ColisExistant colisAGerer) {
         return switch (colisExistant) {
             case ColisPrisEnCharge __ && colisAGerer instanceof ColisEnCoursDAcheminement colisEnCoursAGerer ->
-                    mettreAJourColis(colisEnCoursAGerer);
+                    gererColisEnCoursDAcheminement(colisEnCoursAGerer);
             case ColisEnCoursDAcheminement __ && colisAGerer instanceof ColisEnCoursDAcheminement colisEnCoursAGerer ->
-                    mettreAJourColis(colisEnCoursAGerer);
+                    gererColisEnCoursDAcheminement(colisEnCoursAGerer);
             case ColisEnCoursDAcheminement __  && colisAGerer instanceof ColisRecu colisEnCoursAGerer ->
-                    enregistrerColisRecu(colisEnCoursAGerer);
+                    gererColisRecu(colisEnCoursAGerer);
             case ColisPrisEnCharge __ ->
                     Mono.error(new EtatInvalide("On attend un colis à l'état \"ColisEnCoursDAcheminement\""));
             case ColisEnCoursDAcheminement __ ->
@@ -61,11 +61,11 @@ public class LivraisonDeColis {
         };
     }
 
-    private Mono<Colis.ColisExistant> enregistrerColisRecu(ColisRecu colisEnCoursAGerer) {
+    private Mono<Colis.ColisExistant> gererColisRecu(ColisRecu colisEnCoursAGerer) {
         return colisExistants.mettreAJourColis(colisEnCoursAGerer);
     }
 
-    private Mono<Colis.ColisExistant> mettreAJourColis(ColisEnCoursDAcheminement colisEnCoursAGerer) {
+    private Mono<Colis.ColisExistant> gererColisEnCoursDAcheminement(ColisEnCoursDAcheminement colisEnCoursAGerer) {
         return colisExistants.mettreAJourColis(colisEnCoursAGerer);
     }
 }

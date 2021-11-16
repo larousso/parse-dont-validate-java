@@ -1,5 +1,6 @@
 package fr.maif.parsedontvalidatejava.v2.adapters.serde;
 
+import fr.maif.json.JsResult;
 import fr.maif.json.Json;
 import fr.maif.json.JsonFormat;
 import fr.maif.json.JsonRead;
@@ -15,14 +16,19 @@ import fr.maif.parsedontvalidatejava.v2.domain.Colis.ColisRecu.ColisRecuBuilder;
 import fr.maif.parsedontvalidatejava.v2.domain.Colis.NouveauColis.NouveauColisBuilder;
 import fr.maif.parsedontvalidatejava.v2.domain.Colis.PositionGps.PositionGpsBuilder;
 import fr.maif.parsedontvalidatejava.libs.Refined;
+import io.vavr.control.Option;
 
 import java.time.LocalDateTime;
+import java.util.function.Function;
 
 import static fr.maif.json.Json.$$;
 import static fr.maif.json.JsonRead.*;
 import static fr.maif.json.JsonWrite.$localdatetime;
+import static fr.maif.parsedontvalidatejava.libs.Jsons.$double;
+import static fr.maif.parsedontvalidatejava.libs.Jsons._double;
 import static fr.maif.parsedontvalidatejava.libs.Refined.refinedString;
 import static io.vavr.API.$;
+import static io.vavr.API.Option;
 
 public interface ColisJsonFormat {
 
@@ -61,7 +67,7 @@ public interface ColisJsonFormat {
     static JsonFormat<NouveauColis> nouveauColisFormat() {
         return JsonFormat.of(
                 __("email", emailFormat(), NouveauColis.builder()::email)
-                .and(_opt("dateDEnvoi", dateDEnvoiFormat()).map(d -> d.getOrElse(new DateDEnvoi(LocalDateTime.now()))), NouveauColisBuilder::dateDEnvoi)
+                .and(__("dateDEnvoi", dateDEnvoiFormat().orElse(now(DateDEnvoi::new))), NouveauColisBuilder::dateDEnvoi)
                 .and(__("adresse", adresseFormat()), NouveauColisBuilder::adresse)
                 .map(NouveauColisBuilder::build),
                 (NouveauColis colis) -> Json.obj(
@@ -71,6 +77,10 @@ public interface ColisJsonFormat {
                         $$("adresse", colis.adresse(), adresseFormat())
                 )
         );
+    }
+
+    static <T> JsonRead<T> now(Function<LocalDateTime, T> creator) {
+        return jsonNode -> JsResult.success(creator.apply(LocalDateTime.now()));
     }
 
     static JsonFormat<ColisPrisEnCharge> colisPrisEnChargeFormat() {
@@ -111,12 +121,12 @@ public interface ColisJsonFormat {
 
     static JsonFormat<PositionGps> positionFormat() {
         return JsonFormat.of(
-                __("latitude", _int(), PositionGps.builder()::latitude)
-                .and(__("longitude", _int()), PositionGpsBuilder::longitude)
+                __("latitude", _double(), PositionGps.builder()::latitude)
+                .and(__("longitude", _double()), PositionGpsBuilder::longitude)
                 .map(PositionGpsBuilder::build),
                 (PositionGps gps) -> Json.obj(
-                    $$("latitude", gps.latitude()),
-                    $$("longitude", gps.longitude())
+                    $$("latitude", gps.latitude(), $double()),
+                    $$("longitude", gps.longitude(), $double())
                 )
         );
     }

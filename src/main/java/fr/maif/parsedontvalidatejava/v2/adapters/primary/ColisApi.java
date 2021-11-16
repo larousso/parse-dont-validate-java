@@ -50,12 +50,16 @@ public class ColisApi {
         return serverRequest.bodyToMono(JsonNode.class)
                 .flatMap(json ->
                         Json.fromJson(json, ColisJsonFormat.colisExistantFormat()).fold(
+                                // Json invalide : bad request, on retourne la liste des erreurs au client
                                 errors -> badRequest().bodyValue(Json.obj($$("errors", Json.arr(
                                         errors.map(err -> Json.toJson(err, JsonWrite.auto()))
                                 )))),
+                                // Ok : on traite le colis
                                 nouveauColis -> this.livraisonDeColis.gererColis(nouveauColis)
                                         .flatMap(colis -> ok().bodyValue(Json.toJson(colis, ColisJsonFormat.colisFormat())))
+                                        // Le colis n'existe pas : not found
                                         .onErrorResume(ColisNonTrouve.class, e -> notFound().build())
+                                        // état incohérent : bad request
                                         .onErrorResume(EtatInvalide.class, e -> badRequest().bodyValue(
                                                 Json.obj($$("errors", Json.arr(e.getMessage()))))
                                         ))

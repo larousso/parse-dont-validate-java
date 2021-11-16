@@ -22,6 +22,10 @@ public interface NamedColReader<T> extends ColReader<T> {
         return (ColIntRead) () -> colonne;
     }
 
+    static ColReader<Double> doubleCol(String colonne) {
+        return (DoubleIntRead) () -> colonne;
+    }
+
     static ColReader<LocalDateTime> localDateTimeCol(String colonne) {
         return (ColLocalDateTimeRead) () -> colonne;
     }
@@ -37,6 +41,13 @@ public interface NamedColReader<T> extends ColReader<T> {
         @Override
         default Class<Integer> clazz() {
             return Integer.class;
+        }
+    }
+
+    interface DoubleIntRead extends NamedColReader<Double> {
+        @Override
+        default Class<Double> clazz() {
+            return Double.class;
         }
     }
 

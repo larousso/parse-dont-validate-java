@@ -14,10 +14,6 @@ public sealed interface Colis {
         ReferenceColis reference();
     }
 
-    DateDEnvoi dateDEnvoi();
-    Email email();
-    Adresse adresse();
-
     record NouveauColis(DateDEnvoi dateDEnvoi, Email email, Adresse adresse) implements Colis {
         @Builder
         public NouveauColis {
@@ -68,11 +64,9 @@ public sealed interface Colis {
         }
     }
 
-//    sealed interface ReferenceColis { }
-//    record PasDeReference() implements ReferenceColis { }
     record ReferenceColis(String value) implements Refined<String> { }
 
-    record PositionGps(int latitude, int longitude) {
+    record PositionGps(double latitude, double longitude) {
         @Builder
         public PositionGps {}
     }
