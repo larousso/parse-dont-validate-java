@@ -9,90 +9,8 @@ Dans le cas d'une API, une fois le payload d'une requête parsé, c'est le compi
 
 Dans ce talk, l'approche vous sera présentée à travers une application de démo et des exemples concrets de code.
 
-## Démarrer l'app 
 
-```
-docker-compose up 
-```
-
-```
-./gradlew bootRun 
-```
-
-## L'API 
-
-```bash 
-curl -XGET http://localhost:8080/api/v1/colis | jq 
-curl -XGET http://localhost:8080/api/v2/colis | jq 
-```
-
-
-```bash 
-curl -XPOST http://localhost:8080/api/v1/colis -H 'Content-Type:application/json' -d '{
-    "type": "NouveauColis", 
-    "email": "jdusse@maif.fr",
-    "adresse": {
-        "type": "AdresseBtoC", 
-        "ligne1": "Jean Claude Dusse", 
-        "ligne4": "10 rue de la rue",
-        "ligne6": "79000 Niort"
-    }
-}' 
-```
-Ou
-
-```bash 
-curl -XPOST http://localhost:8080/api/v2/colis -H 'Content-Type:application/json' -d '{
-    "type": "NouveauColis", 
-    "email": "jdusse@maif.fr",
-    "adresse": {
-        "type": "AdresseBtoC", 
-        "ligne1": "Jean Claude Dusse", 
-        "ligne4": "10 rue de la rue",
-        "ligne6": "79000 Niort"
-    }
-}' 
-```
-
-
-
-```bash 
-curl -XPUT http://localhost:8080/api/v2/colis/4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa -H 'Content-Type:application/json' -d '{
-    "reference": "4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa",
-    "type": "ColisEnCoursDAcheminement", 
-    "email": "jdusse@maif.fr",
-    "dateDEnvoi": "2021-11-08T11:59:09.933828",
-    "position": {
-        "latitude": 44,
-        "longitude": 60
-    },
-    "adresse": {
-        "type": "AdresseBtoC", 
-        "ligne1": "Jean Claude Dusse", 
-        "ligne4": "10 rue de la rue",
-        "ligne6": "79000 Niort"
-    }
-}' --include
-```
-
-
-```bash 
-curl -XPUT http://localhost:8080/api/colis/v2/4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa -H 'Content-Type:application/json' -d '{
-  "reference": "4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa",
-  "type": "ColisRecu",
-  "dateDEnvoi": "2021-11-08T11:59:09.933828",
-  "dateDeReception": "2021-11-08T14:40:00.000000",
-  "email": "jdusse@maif.fr",
-  "adresse": {
-    "type": "AdresseBtoC",
-    "ligne1": "Jean Claude Dusse",
-    "ligne4": "10 RUE DE LA RUE",
-    "ligne6": "79000 NIORT"
-  }
-}' --include
-```
-
-## Cas classique  
+## L'approche classique  
 
 Une approche traditionnelle consiste à avoir un POJO représentant les données ou chaque attribut est validé par bean validation. 
 
@@ -125,13 +43,13 @@ Ici, on peut déjà remarquer que
  3. On peut avoir des états incohérents. Ex `TypeColis.EnCours` avec une `dateReception` renseignée.
  4. Niveau de confiance faible sur le fait qu'une instance de pojo soit valide ou non.
 
-### Un peu de théorie 
+## Un peu de théorie 
 
 L'approche est de représenter les états par un ADT : un type de donnée algébrique (algebric data type).
 
 Un type algébrique est soit un "type produit" (product type) un "type somme" (sum type).
 
-#### Type produit 
+### Type produit 
 
 Un produit peut être vu comme un n-uplet ou un pojo. La cardinalité d'un type produit est le produit des cardinalités de chaque type "contenus".
 
@@ -143,14 +61,14 @@ Par exemple :
 record MonTypeProduit(String attribut1, int attribut2, boolean attribut3) {}
 ```
 
-#### Type somme 
+### Type somme 
 
 Un type somme est un union. La cardinalité d'un type somme est la somme des cardinalités de types "contenus". 
 
 En java, on pensera au enum. 
 
 
-#### Type algébrique 
+### Type de donnée algébrique 
 
 Un type algébrique est un mix des types somme et produit. 
 
@@ -164,9 +82,9 @@ sealed interface Vehicule {
 }
 ```
 
-#### Réduire les cardinalités 
+### Réduire les cardinalités 
 
-Comme exprimé plus tot, la validation fonctionne mais n'apporte pas un fort niveau de confiance. 
+Comme exprimé plus tôt, la validation fonctionne mais n'apporte pas un fort niveau de confiance. 
 Plutôt que de valider des types primitifs, pourquoi ne pas créer des types dédiés pour représenter précisement les notions manipulées dans le code. 
 
 à la place de 
@@ -179,7 +97,7 @@ class MonPojo {
 }
 ```
 
-On pourrait à la place avoir 
+On pourrait avoir 
 ```java
 record MonPojo(Email email) { }
 ```
@@ -319,3 +237,89 @@ Dans notre base de code on a donc 2 zones :
    * accès à la base de données 
 
 L'approche "parse don't validate" est une bonne extension de l'architecture hexagonale. 
+
+
+## Jouer avec le code 
+
+### Démarrer l'app
+
+```
+docker-compose up 
+```
+
+```
+./gradlew bootRun 
+```
+
+### Utiliser l'API
+
+```bash 
+curl -XGET http://localhost:8080/api/v1/colis | jq 
+curl -XGET http://localhost:8080/api/v2/colis | jq 
+```
+
+
+```bash 
+curl -XPOST http://localhost:8080/api/v1/colis -H 'Content-Type:application/json' -d '{
+    "type": "NouveauColis", 
+    "email": "jdusse@maif.fr",
+    "adresse": {
+        "type": "AdresseBtoC", 
+        "ligne1": "Jean Claude Dusse", 
+        "ligne4": "10 rue de la rue",
+        "ligne6": "79000 Niort"
+    }
+}' 
+```
+Ou
+
+```bash 
+curl -XPOST http://localhost:8080/api/v2/colis -H 'Content-Type:application/json' -d '{
+    "type": "NouveauColis", 
+    "email": "jdusse@maif.fr",
+    "adresse": {
+        "type": "AdresseBtoC", 
+        "ligne1": "Jean Claude Dusse", 
+        "ligne4": "10 rue de la rue",
+        "ligne6": "79000 Niort"
+    }
+}' 
+```
+
+
+
+```bash 
+curl -XPUT http://localhost:8080/api/v2/colis/4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa -H 'Content-Type:application/json' -d '{
+    "reference": "4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa",
+    "type": "ColisEnCoursDAcheminement", 
+    "email": "jdusse@maif.fr",
+    "dateDEnvoi": "2021-11-08T11:59:09.933828",
+    "position": {
+        "latitude": 44,
+        "longitude": 60
+    },
+    "adresse": {
+        "type": "AdresseBtoC", 
+        "ligne1": "Jean Claude Dusse", 
+        "ligne4": "10 rue de la rue",
+        "ligne6": "79000 Niort"
+    }
+}' --include
+```
+
+
+```bash 
+curl -XPUT http://localhost:8080/api/colis/v2/4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa -H 'Content-Type:application/json' -d '{
+  "reference": "4bcdeac1-3aa7-4a7a-91a4-b5d3e40adefa",
+  "type": "ColisRecu",
+  "dateDEnvoi": "2021-11-08T11:59:09.933828",
+  "dateDeReception": "2021-11-08T14:40:00.000000",
+  "email": "jdusse@maif.fr",
+  "adresse": {
+    "type": "AdresseBtoC",
+    "ligne1": "Jean Claude Dusse",
+    "ligne4": "10 RUE DE LA RUE",
+    "ligne6": "79000 NIORT"
+  }
+}' --include
+```
