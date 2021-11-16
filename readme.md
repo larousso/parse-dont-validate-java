@@ -37,15 +37,27 @@ public class Colis {
 
 Ce pojo est validé en utilisant l'annotation `@Valid` dans le contrôleur ou dans le service.   
 
+```java
+@PostMapping
+public Mono<ResponseEntity<Colis>> prendreEnChargeLeColis(@RequestBody @Valid Colis colis) {
+  return this.livraisonDeColis
+                  .prendreEnChargeLeColis(colis)
+                  .map(ResponseEntity::ok)
+                  .onErrorResume(ColisNonTrouve.class, e ->
+                          Mono.just(ResponseEntity.notFound().build())
+                  );
+}
+```
+
 Ici, on peut déjà remarquer que 
- 1. Il est facile de se tromper en instanciant cet objet. Ex inverser `dateDEnvoi` et `dateReception`.
- 2. Les validations conditionnelles ne sont pas simple à faire. 
+ 1. Il est facile de se tromper en instanciant l'objet colis. Ex inverser `dateDEnvoi` et `dateReception`.
+ 2. Les validations conditionnelles ne sont pas simple à faire. Ex valider que la date de reception est non null lorsque le type de colis a la valeur `ColisRecu`.
  3. On peut avoir des états incohérents. Ex `TypeColis.EnCours` avec une `dateReception` renseignée.
- 4. Niveau de confiance faible sur le fait qu'une instance de pojo soit valide ou non.
+ 4. Niveau de confiance faible sur le fait qu'une instance de pojo soit valide ou non. Elle ne sera valide que si l'instance est passée par le controller.
 
 ## Un peu de théorie 
 
-L'approche est de représenter les états par un ADT : un type de donnée algébrique (algebric data type).
+Une solution pour répondre aux problématiques énoncées précédement est d'utiliser des ADT "types algébrique de données" (algebric data type) pour représenter les différents états gérés par notre application.
 
 Un type algébrique est soit un "type produit" (product type) un "type somme" (sum type).
 
@@ -68,21 +80,24 @@ Un type somme est un union. La cardinalité d'un type somme est la somme des car
 En java, on pensera au enum. 
 
 
-### Type de donnée algébrique 
+### Type algébrique de données
 
-Un type algébrique est un mix des types somme et produit. 
+Un type algébrique combine les types somme et les types produit. 
 
-En java on peut représenter ça par une interface scellée. 
+En java 17 on peut représenter ça par une interface scellée. 
 
 ```java
-sealed interface Vehicule {
+sealed interface Vehicule permits Vehicule.Voiture, Vehicule.Scooter, Vehicule.Bus {
     record Voiture(String couleur, Integer nbPortes) implements Vehicule {}
     record Scooter(String couleur) implements Vehicule {}
     record Bus(String couleur, Integer nbPlaces) implements Vehicule {}
 }
 ```
 
-### Réduire les cardinalités 
+Le mot clé `sealed` indique que l'interface ne peut être implémentée que par une liste finie de classes ou de records. La liste est déclarée avec le mot clé `permits`. 
+Dans l'illustation proposée, on pourrait enlever le mot clé permits puisque la liste des implémentations est dans le même fichier. 
+
+### Avoir des types précis 
 
 Comme exprimé plus tôt, la validation fonctionne mais n'apporte pas un fort niveau de confiance. 
 Plutôt que de valider des types primitifs, pourquoi ne pas créer des types dédiés pour représenter précisement les notions manipulées dans le code. 
