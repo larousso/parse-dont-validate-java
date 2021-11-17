@@ -133,7 +133,7 @@ record Email(String value) {
 ```
 
 Avec cette approche, il est impossible d'avoir une instance d'email qui ne soit pas valide. 
-Autre avantage, il n'est plus possible d'inverser de string dans un constructeur car chaque donnée à son propre type. 
+Autre avantage, il n'est plus possible d'inverser plusieurs `String` dans un constructeur car chaque donnée à son propre type. 
 
 Le niveau de confiance devient alors plus fort.  
 
