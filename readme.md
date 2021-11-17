@@ -57,7 +57,7 @@ Ici, on peut déjà remarquer que
 
 ## Un peu de théorie 
 
-Une solution pour répondre aux problématiques énoncées précédement est d'utiliser des ADT "types algébrique de données" (algebric data type) pour représenter les différents états gérés par notre application.
+Une solution pour répondre aux problématiques énoncées précédement est d'utiliser des ADT "type algébrique de données" (algebric data type) pour représenter les différents états gérés par notre application.
 
 Un type algébrique est soit un "type produit" (product type) un "type somme" (sum type).
 
@@ -70,15 +70,20 @@ En java, les records permettent facilement de représenter un type produit.
 Par exemple : 
 
 ```java
-record MonTypeProduit(String attribut1, int attribut2, boolean attribut3) {}
+record Voiture (Marque marque, String modele, Integer prix) {}
 ```
 
 ### Type somme 
 
 Un type somme est un union. La cardinalité d'un type somme est la somme des cardinalités de types "contenus". 
 
-En java, on pensera au enum. 
+En java, on pensera à un enum. 
 
+```java
+enum Marque {
+   PEUGEOT, RENAULT, CITROEN
+}
+```
 
 ### Type algébrique de données
 
@@ -88,9 +93,9 @@ En java 17 on peut représenter ça par une interface scellée.
 
 ```java
 sealed interface Vehicule permits Vehicule.Voiture, Vehicule.Scooter, Vehicule.Bus {
-    record Voiture(String couleur, Integer nbPortes) implements Vehicule {}
-    record Scooter(String couleur) implements Vehicule {}
-    record Bus(String couleur, Integer nbPlaces) implements Vehicule {}
+   record Voiture (Marque marque, String modele, Integer prix) implements Vehicule {}
+   record Scooter(String couleur) implements Vehicule {}
+   record Bus(String couleur, Integer nbPlaces) implements Vehicule {}
 }
 ```
 
