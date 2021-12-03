@@ -1,5 +1,6 @@
 package fr.maif.parsedontvalidatejava.v1.adapters.primary;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import fr.maif.parsedontvalidatejava.v1.domain.LivraisonDeColis;
 import fr.maif.parsedontvalidatejava.v1.domain.errors.ColisNonTrouve;
 import fr.maif.parsedontvalidatejava.v1.domain.errors.EtatInvalide;
@@ -48,5 +49,4 @@ public class ColisApiV1 {
                                 .body(Json.obj($$("errors", Json.arr(e.getMessage()))))
                         ));
     }
-
 }

@@ -22,10 +22,9 @@ import java.time.LocalDateTime;
 import java.util.function.Function;
 
 import static fr.maif.json.Json.$$;
+import static fr.maif.json.JsonFormat._$double;
 import static fr.maif.json.JsonRead.*;
 import static fr.maif.json.JsonWrite.$localdatetime;
-import static fr.maif.parsedontvalidatejava.libs.Jsons.$double;
-import static fr.maif.parsedontvalidatejava.libs.Jsons._double;
 import static fr.maif.parsedontvalidatejava.libs.Refined.refinedString;
 import static io.vavr.API.$;
 import static io.vavr.API.Option;
@@ -125,8 +124,8 @@ public interface ColisJsonFormat {
                 .and(__("longitude", _double()), PositionGpsBuilder::longitude)
                 .map(PositionGpsBuilder::build),
                 (PositionGps gps) -> Json.obj(
-                    $$("latitude", gps.latitude(), $double()),
-                    $$("longitude", gps.longitude(), $double())
+                    $$("latitude", gps.latitude(), _$double()),
+                    $$("longitude", gps.longitude(), _$double())
                 )
         );
     }
