@@ -217,6 +217,9 @@ public sealed interface Colis {
         public DateDEnvoi {
             throwInvalid(nonNull(value).andThen(() -> datePassee(value)));
         }
+        public static DateDEnvoi now() {
+            return new DateDEnvoi(LocalDateTime.now());
+        }
     }
 
     record DateDeReception(LocalDateTime value) implements Refined<LocalDateTime> {

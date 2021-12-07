@@ -9,6 +9,9 @@ Dans le cas d'une API, une fois le payload d'une requête parsé, c'est le compi
 
 Dans ce talk, l'approche vous sera présentée à travers une application de démo et des exemples concrets de code.
 
+## Les slides du talk 
+
+[C'est ici que ça se passe](https://docs.google.com/presentation/d/1AJHnyBabLbjdTo1Ti2o_dzgj1E6AAh1_sWu3XRQJPnE/edit?usp=sharing)
 
 ## L'approche classique  
 
@@ -305,7 +308,20 @@ curl -XPOST http://localhost:8080/api/v2/colis -H 'Content-Type:application/json
     }
 }' 
 ```
+Invalide: 
 
+```bash
+curl -XPOST http://localhost:8080/api/v2/colis -H 'Content-Type:application/json' -d '{
+    "type": "NouveauColis",
+    "email": "jdusse@maiffr",
+    "adresse": {
+        "type": "AdresseBtoC",
+        "ligne1": "Jean Claude Dusse qui habite dans une rue qui va bien finir par dépasser les 38 caractères autorisés",
+        "ligne4": "10 rue de la rue",
+        "ligne6": "79000 Niort"
+    }
+}'
+```
 
 
 ```bash 

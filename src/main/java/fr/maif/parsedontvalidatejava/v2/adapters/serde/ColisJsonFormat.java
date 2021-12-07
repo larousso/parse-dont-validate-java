@@ -66,7 +66,7 @@ public interface ColisJsonFormat {
     static JsonFormat<NouveauColis> nouveauColisFormat() {
         return JsonFormat.of(
                 __("email", emailFormat(), NouveauColis.builder()::email)
-                .and(__("dateDEnvoi", dateDEnvoiFormat().orElse(now(DateDEnvoi::new))), NouveauColisBuilder::dateDEnvoi)
+                .and(__("dateDEnvoi", dateDEnvoiFormat()).orDefault(DateDEnvoi.now()), NouveauColisBuilder::dateDEnvoi)
                 .and(__("adresse", adresseFormat()), NouveauColisBuilder::adresse)
                 .map(NouveauColisBuilder::build),
                 (NouveauColis colis) -> Json.obj(
