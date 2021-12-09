@@ -320,7 +320,7 @@ curl -XPOST http://localhost:8080/api/v2/colis -H 'Content-Type:application/json
         "ligne4": "10 rue de la rue",
         "ligne6": "79000 Niort"
     }
-}'
+}' | jq
 ```
 
 

@@ -1,9 +1,9 @@
 package fr.maif.parsedontvalidatejava.v2.adapters.serde;
 
-import fr.maif.json.JsResult;
 import fr.maif.json.Json;
 import fr.maif.json.JsonFormat;
 import fr.maif.json.JsonRead;
+import fr.maif.parsedontvalidatejava.libs.Refined;
 import fr.maif.parsedontvalidatejava.v2.domain.Colis;
 import fr.maif.parsedontvalidatejava.v2.domain.Colis.*;
 import fr.maif.parsedontvalidatejava.v2.domain.Colis.Adresse.AdresseBtoB;
@@ -15,11 +15,6 @@ import fr.maif.parsedontvalidatejava.v2.domain.Colis.ColisPrisEnCharge.ColisPris
 import fr.maif.parsedontvalidatejava.v2.domain.Colis.ColisRecu.ColisRecuBuilder;
 import fr.maif.parsedontvalidatejava.v2.domain.Colis.NouveauColis.NouveauColisBuilder;
 import fr.maif.parsedontvalidatejava.v2.domain.Colis.PositionGps.PositionGpsBuilder;
-import fr.maif.parsedontvalidatejava.libs.Refined;
-import io.vavr.control.Option;
-
-import java.time.LocalDateTime;
-import java.util.function.Function;
 
 import static fr.maif.json.Json.$$;
 import static fr.maif.json.JsonFormat._$double;
@@ -27,7 +22,6 @@ import static fr.maif.json.JsonRead.*;
 import static fr.maif.json.JsonWrite.$localdatetime;
 import static fr.maif.parsedontvalidatejava.libs.Refined.refinedString;
 import static io.vavr.API.$;
-import static io.vavr.API.Option;
 
 public interface ColisJsonFormat {
 
@@ -76,10 +70,6 @@ public interface ColisJsonFormat {
                         $$("adresse", colis.adresse(), adresseFormat())
                 )
         );
-    }
-
-    static <T> JsonRead<T> now(Function<LocalDateTime, T> creator) {
-        return jsonNode -> JsResult.success(creator.apply(LocalDateTime.now()));
     }
 
     static JsonFormat<ColisPrisEnCharge> colisPrisEnChargeFormat() {
