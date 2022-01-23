@@ -13,7 +13,7 @@ Dans ce talk, l'approche vous sera présentée à travers une application de dé
 
 [C'est ici que ça se passe](https://docs.google.com/presentation/d/1AJHnyBabLbjdTo1Ti2o_dzgj1E6AAh1_sWu3XRQJPnE/edit?usp=sharing)
 
-## L'approche classique  
+## L'approche classique
 
 Une approche traditionnelle consiste à avoir un POJO représentant les données ou chaque attribut est validé par bean validation. 
 
@@ -60,7 +60,7 @@ Ici, on peut déjà remarquer que
 
 ## Un peu de théorie 
 
-Une solution pour répondre aux problématiques énoncées précédement est d'utiliser des ADT "type algébrique de données" (algebric data type) pour représenter les différents états gérés par notre application.
+Une solution pour répondre aux problématiques énoncées précédemment est d'utiliser des ADT "type algébrique de données" (algebric data type) pour représenter les différents états gérés par notre application.
 
 Un type algébrique est soit un "type produit" (product type) un "type somme" (sum type).
 
@@ -103,7 +103,7 @@ sealed interface Vehicule permits Vehicule.Voiture, Vehicule.Scooter, Vehicule.B
 ```
 
 Le mot clé `sealed` indique que l'interface ne peut être implémentée que par une liste finie de classes ou de records. La liste est déclarée avec le mot clé `permits`. 
-Dans l'illustation proposée, on pourrait enlever le mot clé permits puisque la liste des implémentations est dans le même fichier. 
+Dans l'illustation proposée, on pourrait enlever le mot clé `permits` puisque la liste des implémentations est dans le même fichier. 
 
 ### Avoir des types précis 
 
@@ -142,17 +142,14 @@ Le niveau de confiance devient alors plus fort.
 
 ## Rendre les états incohérents impossibles
 
-L'étape suivante est de rendre les états incohérents impossibles. Pour ceci on va utiliser les type algébriques. 
+L'étape suivante est de rendre les états incohérents impossibles, on va bien sûr utiliser les types algébriques de données. 
 
 Dans le cas du colis, on pourra avoir une représentation comme ceci : 
 
 ```java
-
 public sealed interface Colis {
 
-    sealed
-
-    interface ColisExistant extends Colis {
+    sealed interface ColisExistant extends Colis {
         ReferenceColis reference();
     }
 
@@ -213,7 +210,7 @@ public sealed interface Colis {
 
 De cette façon, on a la liste exhaustive de chaque état. Il n'est plus possible de créer un état incohérent.
 
-En utilisant le `switch` de java 17 il est possible de pattern matcher sur les types et le compilateur va nous alerter s'il y a un oubli : 
+En utilisant le `switch` de java 17 il est possible de "pattern matcher" sur les types et le compilateur va nous alerter s'il y a un oubli : 
 
 ```java
 var texte = switch(colis) {
@@ -229,7 +226,7 @@ Si un `case` est oublié, il y'aura une erreur de compilation.
 
 ## Parse don't validate 
 
-Maintenant qu'on a des classes qui représentent nos états et nos données de façon stricte, comme passe t'on d'un monde http / json unsafe au monde ADT safe. Et bien en écrivant des parsers. 
+Maintenant qu'on a des classes qui représentent nos états et nos données de façon stricte, comment passe-t-on d'un monde http / json unsafe au monde ADT safe. Et bien en écrivant des parsers. 
 
 Dans la solution proposée, la lib [`functional-json`](https://github.com/maif/functional-json) est utilisée. Dans cette approche on parse chaque attribue du json dans le bon format. La librairie permet d'empiler toutes les erreurs rencontrées lors de la lecture d'un objet.
 
@@ -254,12 +251,12 @@ static JsonFormat<ColisPrisEnCharge> colisPrisEnChargeFormat() {
 ```
 
 Dans notre base de code on a donc 2 zones : 
- * une zone fortement typée avec un fort degrès de confiance : le code métier  
+ * une zone fortement typée avec un fort degré de confiance : le code métier  
  * une zone faiblement typée sans garanties : 
    * controller http
    * accès à la base de données 
 
-L'approche "parse don't validate" est une bonne extension de l'architecture hexagonale. 
+L'approche "parse don't validate" est un bon complément de l'architecture hexagonale. 
 
 
 ## Jouer avec le code 
