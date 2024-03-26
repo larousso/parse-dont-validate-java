@@ -45,19 +45,15 @@ public class LivraisonDeColis {
     }
 
     Mono<? extends Colis> gererColisExistant(Colis.ColisExistant colisExistant, Colis.ColisExistant colisAGerer) {
-        return switch (colisExistant) {
-            case ColisPrisEnCharge __ && colisAGerer instanceof ColisEnCoursDAcheminement colisEnCoursAGerer ->
-                    gererColisEnCoursDAcheminement(colisEnCoursAGerer);
-            case ColisEnCoursDAcheminement __ && colisAGerer instanceof ColisEnCoursDAcheminement colisEnCoursAGerer ->
-                    gererColisEnCoursDAcheminement(colisEnCoursAGerer);
-            case ColisEnCoursDAcheminement __  && colisAGerer instanceof ColisRecu colisEnCoursAGerer ->
-                    gererColisRecu(colisEnCoursAGerer);
-            case ColisPrisEnCharge __ ->
-                    Mono.error(new EtatInvalide("On attend un colis à l'état \"ColisEnCoursDAcheminement\""));
-            case ColisEnCoursDAcheminement __ ->
-                    Mono.error(new EtatInvalide("On attend un colis à l'état \"ColisEnCoursDAcheminement\" ou \"ColisPrisEnCharge\""));
-            case ColisRecu __ ->
-                    Mono.error(new EtatInvalide("Le colis est déja reçu"));
+        record ExistantEtAGerer(Colis.ColisExistant colisExistant, Colis.ColisExistant colisAGerer) {}
+
+        return switch (new ExistantEtAGerer(colisExistant, colisAGerer)) {
+            case ExistantEtAGerer(ColisPrisEnCharge         _, ColisEnCoursDAcheminement colisEnCoursAGerer) -> gererColisEnCoursDAcheminement(colisEnCoursAGerer);
+            case ExistantEtAGerer(ColisEnCoursDAcheminement _, ColisEnCoursDAcheminement colisEnCoursAGerer) -> gererColisEnCoursDAcheminement(colisEnCoursAGerer);
+            case ExistantEtAGerer(ColisEnCoursDAcheminement _, ColisRecu colisEnCoursAGerer) -> gererColisRecu(colisEnCoursAGerer);
+            case ExistantEtAGerer(ColisPrisEnCharge         _, var _) -> Mono.error(new EtatInvalide("On attend un colis à l'état \"ColisEnCoursDAcheminement\""));
+            case ExistantEtAGerer(ColisEnCoursDAcheminement _, var _) -> Mono.error(new EtatInvalide("On attend un colis à l'état \"ColisEnCoursDAcheminement\" ou \"ColisPrisEnCharge\""));
+            case ExistantEtAGerer(ColisRecu                 _, var _) -> Mono.error(new EtatInvalide("Le colis est déja reçu"));
         };
     }
 

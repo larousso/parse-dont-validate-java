@@ -14,8 +14,8 @@ public sealed interface Colis {
         ReferenceColis reference();
     }
 
+    @Builder
     record NouveauColis(DateDEnvoi dateDEnvoi, Email email, Adresse adresse) implements Colis {
-        @Builder
         public NouveauColis {
             throwInvalid(nonNull(dateDEnvoi)
                     .and(nonNull(email))
@@ -28,8 +28,9 @@ public sealed interface Colis {
         }
     }
 
+    @Builder
     record ColisPrisEnCharge(ReferenceColis reference, DateDEnvoi dateDEnvoi, Email email, Adresse adresse) implements ColisExistant {
-        @Builder
+
         public ColisPrisEnCharge {
             throwInvalid(nonNull(reference)
                     .and(nonNull(dateDEnvoi))
@@ -38,8 +39,8 @@ public sealed interface Colis {
             );
         }
     }
+    @Builder
     record ColisEnCoursDAcheminement(ReferenceColis reference, DateDEnvoi dateDEnvoi, PositionGps position, Email email, Adresse adresse) implements ColisExistant {
-        @Builder
         public ColisEnCoursDAcheminement {
             throwInvalid(nonNull(reference)
                     .and(nonNull(dateDEnvoi))
@@ -49,9 +50,9 @@ public sealed interface Colis {
         }
     }
 
+    @Builder
     record ColisRecu(ReferenceColis reference, DateDEnvoi dateDEnvoi, DateDeReception dateDeReception, Email email,
                      Adresse adresse) implements ColisExistant {
-        @Builder
         public ColisRecu {
             throwInvalid(nonNull(reference)
                     .and(nonNull(dateDEnvoi))
@@ -66,8 +67,8 @@ public sealed interface Colis {
 
     record ReferenceColis(String value) implements Refined<String> { }
 
+    @Builder
     record PositionGps(double latitude, double longitude) {
-        @Builder
         public PositionGps {}
     }
 
@@ -162,6 +163,7 @@ public sealed interface Colis {
     }
 
     sealed interface Adresse {
+        @Builder(toBuilder = true)
         record AdresseBtoB(
                 RaisonSocialeOuDenomination ligne1,
                 IdentiteDestinataireOuService ligne2,
@@ -171,7 +173,6 @@ public sealed interface Colis {
                 CodePostalEtLocaliteOuCedex ligne6,
                 Option<Pays> ligne7
         ) implements Adresse {
-            @Builder(toBuilder = true)
             public AdresseBtoB {
                 throwInvalid(nonNull(ligne1)
                         .and(nonNull(ligne2))
@@ -184,6 +185,7 @@ public sealed interface Colis {
             }
         }
 
+        @Builder(toBuilder = true)
         record AdresseBtoC(
                 CiviliteNomPrenom ligne1,
                 Option<NoAppEtageCouloirEscalier> ligne2,
@@ -193,7 +195,6 @@ public sealed interface Colis {
                 CodePostalEtLocaliteOuCedex ligne6,
                 Option<Pays> ligne7
         ) implements Adresse {
-            @Builder(toBuilder = true)
             public AdresseBtoC {
                 throwInvalid(nonNull(ligne1)
                         .and(nonNull(ligne2))

@@ -1,16 +1,14 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.6'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'org.springframework.boot' version '3.2.3'
+	id 'io.spring.dependency-management' version '1.1.4'
 	id 'java'
 }
 
-group = 'fr.maif'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = "17"
-targetCompatibility = "17"
-
-compileJava {
-	options.compilerArgs.add("--enable-preview")
+java {
+	sourceCompatibility = '22'
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(22)
+	}
 }
 
 repositories {
@@ -20,13 +18,13 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-	implementation 'io.r2dbc:r2dbc-postgresql:0.8.10.RELEASE'
+	implementation 'io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE'
 	implementation 'io.vavr:vavr:0.10.4'
 	implementation 'fr.maif:functional-validation:1.0.1'
 	implementation 'fr.maif:functional-json:1.0.4'
-	implementation group: 'org.jooq', name: 'jooq', version: '3.15.4'
-	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
-	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+	implementation group: 'org.jooq', name: 'jooq', version: '3.19.6'
+	compileOnly 'org.projectlombok:lombok:1.18.32'
+	annotationProcessor 'org.projectlombok:lombok:1.18.32'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 }

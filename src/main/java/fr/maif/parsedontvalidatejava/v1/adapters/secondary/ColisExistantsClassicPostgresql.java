@@ -27,7 +27,7 @@ public class ColisExistantsClassicPostgresql implements ColisExistants {
                         select c.*
                         from colis c 
                         """)
-                .map(ColisDatabase.rowReader()::read)
+                .map((r, rm) -> ColisDatabase.rowReader().read(r))
                 .all()
                 .map(ColisDatabase::toColis);
     }
@@ -40,7 +40,7 @@ public class ColisExistantsClassicPostgresql implements ColisExistants {
                     where c.reference = :reference
                 """)
                 .bind("reference", referenceColis)
-                .map(ColisDatabase.rowReader()::read)
+                .map((r, rm) -> ColisDatabase.rowReader().read(r))
                 .one()
                 .map(ColisDatabase::toColis);
     }
@@ -53,7 +53,7 @@ public class ColisExistantsClassicPostgresql implements ColisExistants {
                         returning * 
                 """)
                 .bind("colis", Json.of(jsonString))
-                .map(ColisDatabase.rowReader()::read)
+                .map((r, rm) -> ColisDatabase.rowReader().read(r))
                 .one()
                 .map(ColisDatabase::toColis);
     }
@@ -100,7 +100,7 @@ public class ColisExistantsClassicPostgresql implements ColisExistants {
                         """)
                 .bind("colis", Json.of(jsonString))
                 .bind("reference", colisExistant.reference)
-                .map(ColisDatabase.rowReader()::read)
+                .map((r, rm) -> ColisDatabase.rowReader().read(r))
                 .one()
                 .map(ColisDatabase::toColis);
     }
